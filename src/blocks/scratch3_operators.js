@@ -16,7 +16,8 @@ class Scratch3OperatorsBlocks {
      */
     getPrimitives () {
         return {
-            operator_add: this.add,
+            operator_recognize_term: this.recognizeTerm,
+            operator_add2: this.add2,
             operator_subtract: this.subtract,
             operator_multiply: this.multiply,
             operator_divide: this.divide,
@@ -35,6 +36,10 @@ class Scratch3OperatorsBlocks {
             operator_round: this.round,
             operator_mathop: this.mathop
         };
+    }
+
+    recognizeTerm (args) {
+        return args.STRING;
     }
 
     add (args) {
