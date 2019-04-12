@@ -23,7 +23,8 @@ const builtinExtensions = {
     speech2text: () => require('../extensions/scratch3_speech2text'),
     ev3: () => require('../extensions/scratch3_ev3'),
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
-    gdxfor: () => require('../extensions/scratch3_gdx_for')
+    gdxfor: () => require('../extensions/scratch3_gdx_for'),
+    easyml: () => require('../extensions/scratch3_easyml'),
 };
 
 /**
