@@ -5,7 +5,7 @@ const log = require('../../util/log');
 const brain = require('brain.js');
 const { BagOfWords } = require('./bag-of-words')
 
-let run = function(entry){
+let run = function (entry) {
     return {
         label: 'NO LABEL: you have to train your model',
         confidence: 'NO CONFIDENCE: you have to train your model'
@@ -35,17 +35,17 @@ function receiveMessage(event) {
 
             let result = {
                 label: flippedClasses[i],
-                confidence: predict[i]
+                confidence: (parseFloat(predict[i] * 100)).toFixed(2)
             }
 
             return result
         }
 
-        label = function(entry){
+        label = function (entry) {
             return run(entry)['label'];
         }
 
-        confidence = function(entry){
+        confidence = function (entry) {
             return run(entry)['confidence'];
         }
     }
@@ -64,17 +64,29 @@ class Scratch3Easyml {
     getInfo() {
         return {
             id: 'easyml',
-            name: 'Easy Machine Learning',
+            name: 'EasyML',
             blocks: [
                 {
                     opcode: 'clasify',
-                    blockType: BlockType.COMMAND,
-                    text: 'Clasify [TEXT]',
+                    blockType: BlockType.REPORTER,
+                    text:  'Clasify [TEXT]',
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
                             defaultValue: "enciende la luz"
                         }
+                    }
+                },
+                {
+                    opcode: 'confidence',
+                    blockType: BlockType.REPORTER,
+                    text: 'Confidence [TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "enciende la luz",
+                            description: 'Label for the EasyML extension category'
+                }
                     }
                 }
             ],
@@ -87,6 +99,12 @@ class Scratch3Easyml {
         const text = Cast.toString(args.TEXT);
         return run(text)['label']
     }
+
+    confidence(args) {
+        const text = Cast.toString(args.TEXT);
+        return run(text)['confidence']
+    }
+    
 }
 
 module.exports = Scratch3Easyml;
