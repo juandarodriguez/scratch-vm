@@ -12,18 +12,31 @@ let run = function (entry) {
     }
 };
 
-function receiveMessage(event) {
-    if (event.origin == "http://127.0.0.1:4200") {
-        console.log(event);
-        let dataObj = JSON.parse(event.data);
+
+
+class Scratch3Easyml {
+    constructor(runtime) {
+        this.loadedFromDisk = false;
+        this.runtime = runtime;
+        window.addEventListener("message", () => {
+            if (event.origin == "http://localhost:4200") {
+                console.log(event);
+                this.runtime.easyml_model = event.data;
+                this.buildModel(event.data);
+            }
+        }, false);
+    }
+
+    buildModel(data) {
+        let dataObj = JSON.parse(data);
         let modelJSON = dataObj.modelJSON;
         let classes = dataObj.classes;
         let dict = dataObj.dict;
-        
+
         let net = new brain.NeuralNetwork();
         net.fromJSON(modelJSON);
         let bow = new BagOfWords();
-        
+
         run = function (entry) {
             let term = bow.bow(entry, dict);
             let predict = net.run(term);
@@ -49,14 +62,6 @@ function receiveMessage(event) {
             return run(entry)['confidence'];
         }
     }
-}
-
-window.addEventListener("message", receiveMessage, false);
-
-class Scratch3Easyml {
-    constructor(runtime) {
-        this.runtime = runtime;
-    }
 
     getInfo() {
         return {
@@ -66,7 +71,7 @@ class Scratch3Easyml {
                 {
                     opcode: 'clasify',
                     blockType: BlockType.REPORTER,
-                    text:  'Clasify [TEXT]',
+                    text: 'Clasify [TEXT]',
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
@@ -83,7 +88,7 @@ class Scratch3Easyml {
                             type: ArgumentType.STRING,
                             defaultValue: "enciende la luz",
                             description: 'Label for the EasyML extension category'
-                }
+                        }
                     }
                 }
             ],
@@ -93,6 +98,10 @@ class Scratch3Easyml {
     }
 
     clasify(args) {
+        if (this.runtime.easyml_model && !this.loadedFromDisk) {
+            this.buildModel(this.runtime.easyml_model);
+            this.loadedFromDisk = true;
+        }
         const text = Cast.toString(args.TEXT);
         return run(text)['label']
     }
@@ -101,7 +110,7 @@ class Scratch3Easyml {
         const text = Cast.toString(args.TEXT);
         return run(text)['confidence']
     }
-    
+
 }
 
 module.exports = Scratch3Easyml;

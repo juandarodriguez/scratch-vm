@@ -564,6 +564,11 @@ const serialize = function (runtime, targetId) {
 
     // Assemble payload and return
     obj.meta = meta;
+
+    if(runtime.easyml_model){
+        obj.easyml_model = runtime.easyml_model;
+    }
+    
     return obj;
 };
 

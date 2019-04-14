@@ -471,6 +471,14 @@ class VirtualMachine extends EventEmitter {
         this.clear();
 
         const runtime = this.runtime;
+
+        // Attention this has to be improved. The question is
+        // ¿How to load the model ML in a correct way?
+        if(projectJSON.easyml_model){
+            runtime.easyml_model = projectJSON.easyml_model;
+        }
+        
+        
         const deserializePromise = function () {
             const projectVersion = projectJSON.projectVersion;
             if (projectVersion === 2) {
