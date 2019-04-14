@@ -53,9 +53,6 @@ function receiveMessage(event) {
 
 window.addEventListener("message", receiveMessage, false);
 
-console.log(brain);
-console.log(BagOfWords);
-
 class Scratch3Easyml {
     constructor(runtime) {
         this.runtime = runtime;
