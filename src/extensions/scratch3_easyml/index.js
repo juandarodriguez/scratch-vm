@@ -5,6 +5,11 @@ const log = require('../../util/log');
 const brain = require('brain.js');
 const { BagOfWords } = require('./bag-of-words')
 
+let allowedDomains = [
+    "http://localhost:4200",
+    "http://juandarodriguez.es"
+]
+
 let run = function (entry) {
     return {
         label: 'NO LABEL: you have to train your model',
@@ -19,7 +24,7 @@ class Scratch3Easyml {
         this.loadedFromDisk = false;
         this.runtime = runtime;
         window.addEventListener("message", () => {
-            if (event.origin == "http://localhost:4200") {
+            if (allowedDomains.indexOf(event.origin) != -1) {
                 console.log(event);
                 this.runtime.easyml_model = event.data;
                 this.buildModel(event.data);
