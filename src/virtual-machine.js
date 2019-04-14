@@ -474,10 +474,14 @@ class VirtualMachine extends EventEmitter {
 
         // Attention this has to be improved. The question is
         // ¿How to load the model ML in a correct way?
+        // The idea I have followed is to add to the runtime a new
+        // attribute called easyml_model. This attribute will be
+        // saved in the sb3 file and, afterword iy will be loaded
+        // and used to build the machine learning model function.
         if(projectJSON.easyml_model){
             runtime.easyml_model = projectJSON.easyml_model;
         }
-        
+
         
         const deserializePromise = function () {
             const projectVersion = projectJSON.projectVersion;

@@ -120,3 +120,36 @@ npm run deploy -- -r <your repo url>
 
 ## Donate
 We provide [Scratch](https://scratch.mit.edu) free of charge, and want to keep it that way! Please consider making a [donation](https://secure.donationpay.org/scratchfoundation/) to support our continued engineering, design, community, and resource development efforts. Donations of any size are appreciated. Thank you!
+
+
+## Easy ML Extension
+
+The extension EasyML provides two reporter blocks. Both of them have a
+only input (a text), the first one perform a clasification of the text
+and the second one gives the confidence.
+
+These blocks use a model which is built when a message is sent from 
+the easyML frontend. This messages has a serialized model (JSON format)
+from which a model function is built.
+
+When a model is coming from the easyML frontend, a new attribute called
+easyml_model is added to the runtime object of the vm. This attribute 
+contains the parsed object version of the serialized model JSON.
+
+I have modified the code which performs the scratch project downloading 
+in order to save this attribute (easyml_model) in the sb3 file.
+
+I also have modified the code which performs the scratch file sb3 loading
+to take into account the easyml_model attribute.
+
+The easyML extension take into account if there is a easyml_model 
+attribute in the runtime object and if it hasn't been used yet to
+build the model function, it is use to do it. Later the model 
+function will be rebuilt when a new message from easyML frontend comes. 
+Also, the attribute easyml_model will be updated with these new 
+incoming models, this way, when the scracth project is downloaded again,
+the model will be updated too.
+
+This way once a scratch project (which uses a trained model of the easyml extension) is saved, it can be reloaded afterward together with the trained model and it will work fine with no need of the easyML frontend. That is, the project is autonomous.
+
+All these change have been made in commit a053143ce0209dd1eda417c7e6033e8ef3efdf95.

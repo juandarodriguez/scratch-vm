@@ -565,6 +565,8 @@ const serialize = function (runtime, targetId) {
     // Assemble payload and return
     obj.meta = meta;
 
+    // Here I add the new attribute easyml_model to be saved in the
+    // sb3 file
     if(runtime.easyml_model){
         obj.easyml_model = runtime.easyml_model;
     }
