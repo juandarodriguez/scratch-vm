@@ -128,13 +128,19 @@ The extension EasyML provides two reporter blocks. Both of them have a
 only input (a text), the first one perform a clasification of the text
 and the second one gives the confidence.
 
-These blocks use a model which is built when a message is sent from 
-the easyML frontend. This messages has a serialized model (JSON format)
-from which a model function is built.
+These blocks use a model which is built from the attribute `easyml_model`
+of runtime object. Such an attribute has been added to the runtime object 
+of the vm. This attribute contains the parsed object version of the 
+serialized model JSON.
 
-When a model is coming from the easyML frontend, a new attribute called
-easyml_model is added to the runtime object of the vm. This attribute 
-contains the parsed object version of the serialized model JSON.
+The new attribute `easyml_model` is managed by the easyML extension and
+updated when a new model exists in the localstorage of easyML application.
+That is: the extension, before compute any result, look at the localstorage
+of easyML application (by using a cross domain localstorage sharing strategy)
+and if there is a new model then updates the `easyml_model`. 
+
+This new attribute is saved and loaded in sb3 files. So when opening a 
+sb3 file which has easyML blocks, a model is also loaded. This way once a scratch project (which uses a trained model of the easyml extension) is saved,it can be reloaded afterward together with the trained model and it will work fine with no need of the easyML frontend. That is, the project is autonomous.
 
 I have modified the code which performs the scratch project downloading 
 in order to save this attribute (easyml_model) in the sb3 file.
@@ -142,14 +148,7 @@ in order to save this attribute (easyml_model) in the sb3 file.
 I also have modified the code which performs the scratch file sb3 loading
 to take into account the easyml_model attribute.
 
-The easyML extension take into account if there is a easyml_model 
-attribute in the runtime object and if it hasn't been used yet to
-build the model function, it is use to do it. Later the model 
-function will be rebuilt when a new message from easyML frontend comes. 
-Also, the attribute easyml_model will be updated with these new 
-incoming models, this way, when the scracth project is downloaded again,
-the model will be updated too.
 
-This way once a scratch project (which uses a trained model of the easyml extension) is saved, it can be reloaded afterward together with the trained model and it will work fine with no need of the easyML frontend. That is, the project is autonomous.
 
-All these change have been made in commit a053143ce0209dd1eda417c7e6033e8ef3efdf95.
+All these change have been made in commits a053143ce0209dd1eda417c7e6033e8ef3efdf95.
+5479b5b13c92cf6ad690af9002a0425ae6df7857
