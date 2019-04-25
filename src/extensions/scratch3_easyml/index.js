@@ -12,6 +12,7 @@ class Scratch3Easyml {
     constructor(runtime) {
         this.modelFunction = null;
         this.easymodelStorage = createGuest("http://localhost:4200");
+        //this.easymodelStorage = createGuest("http://easyml.juandarodriguez.es");
         this.runtime = runtime;
     }
 
