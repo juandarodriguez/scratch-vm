@@ -5,6 +5,8 @@ const log = require('../../util/log');
 const brain = require('brain.js');
 const { BagOfWords } = require('./bag-of-words');
 const createGuest = require('cross-domain-storage/guest');
+//const brain_text = require('./brain_text_dev');
+const brain_text = require('brain-text');
 
 
 class Scratch3Easyml {
@@ -19,8 +21,6 @@ class Scratch3Easyml {
     buildModel(modelObj) {
         console.log("entro en buildModel");
         let modelJSON = modelObj.modelJSON;
-        let classes = modelObj.classes;
-        let dict = modelObj.dict;
 
         // Atention TRICK: When serialized, if timeout=Infinity, as JSON don't 
         // understand Infinity value is saved as 0 which causes an error when 
@@ -30,35 +30,14 @@ class Scratch3Easyml {
                 (modelJSON.trainOpts.timeout == 0) ? Infinity : modelJSON.trainOpts.timeout;
         }
 
-        let net = new brain.NeuralNetwork();
-
-        net.fromJSON(modelJSON);
-        let bow = new BagOfWords();
+        brain_text.fromJSON(modelJSON, modelObj.dict, modelObj.classes, modelObj.traindata);
 
         this.modelFunction = function (entry) {
-            let term = bow.bow(entry, dict);
-            let predict = net.run(term);
-            let i = bow.maxarg(predict);
-            let flippedClasses = {};
-            for (let key in classes) {
-                flippedClasses[classes[key]] = key
-            }
-
-            let result = {
-                label: flippedClasses[i],
-                confidence: (parseFloat(predict[i] * 100)).toFixed(2)
-            }
-
+            let result = brain_text.run(entry);
+            console.log(result);
             return result
         }
 
-        label = function (entry) {
-            return run(entry)['label'];
-        }
-
-        confidence = function (entry) {
-            return run(entry)['confidence'];
-        }
     }
 
     getInfo() {
@@ -86,6 +65,21 @@ class Scratch3Easyml {
                             type: ArgumentType.STRING,
                             defaultValue: "enciende la luz",
                             description: 'Label for the EasyML extension category'
+                        }
+                    }
+                },
+                {
+                    opcode: 'retrain',
+                    blockType: BlockType.COMMAND,
+                    text: 'Add text [ENTRY] with label [LABEL] and wait until trained',
+                    arguments: {
+                        ENTRY: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "dale a la lamparita"
+                        },
+                        LABEL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: "encender_lampara"
                         }
                     }
                 }
@@ -177,6 +171,17 @@ class Scratch3Easyml {
             }
         );
 
+    }
+
+    retrain (args) {
+        console.log(args);
+        let entry = args.ENTRY;
+        let label = args.LABEL;
+
+        if(brain_text.addOneData({label: label, text: entry})){
+            return brain_text.train();
+        }
+        
     }
 
 }
