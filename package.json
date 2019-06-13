@@ -33,6 +33,7 @@
     "arraybuffer-loader": "^1.0.6",
     "atob": "2.1.2",
     "brain-text": "git+https://github.com/juandarodriguez/brain-text.git",
+    "brain-bow": "git+https://github.com/juandarodriguez/brain-bow.git",
     "brain.js": "^1.6.1",
     "btoa": "1.2.1",
     "canvas-toBlob": "1.0.0",
