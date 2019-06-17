@@ -5,8 +5,9 @@ const log = require('../../util/log');
 const brain = require('brain.js');
 const { BagOfWords } = require('./bag-of-words');
 const createGuest = require('cross-domain-storage/guest');
-const BrainText = require('./brain_text_dev');
-//const BrainText = require('brain-text');
+//const BrainText = require('./brain_text_dev');
+const BrainText = require('brain-text');
+const Runtime = require('../../engine/runtime');
 
 
 class Scratch3Easyml {
@@ -17,20 +18,34 @@ class Scratch3Easyml {
         //this.easymodelStorage = createGuest("http://easyml.juandarodriguez.es");
         this.runtime = runtime;
         this.brainText = new BrainText();
+        this.runtimeState = "STOPPED";
+        
+        // this is needed in order to know when the project is running since
+        // I want to retrain only when project is running (see retrain() function)
+        this.runtime.on(Runtime.PROJECT_RUN_START, () => {
+            console.log("Entro en run start");
+            this.runtimeState = "RUNNING";
+        });
+
+        this.runtime.on(Runtime.PROJECT_RUN_STOP, () => {
+            console.log("Entro en run stop");
+            this.runtimeState = "STOPPED";
+        });
+
     }
 
-    buildModel(modelObj) {
+    buildModel(model) {
         console.log("entro en buildModel");
-
+        let net = model.modelJSON.net;
         // Atention TRICK: When serialized, if timeout=Infinity, as JSON don't 
         // understand Infinity value is saved as 0 which causes an error when 
         // building net fromJSON. So, this is fixed here (I don't like this solution)
-        if (modelObj.net.trainOpts.timeout != undefined) {
-            modelObj.net.trainOpts.timeout =
-                (modelObj.net.trainOpts.timeout == 0) ? Infinity : modelObj.net.trainOpts.timeout;
+        if (net.trainOpts.timeout != undefined) {
+            net.trainOpts.timeout =
+                (net.trainOpts.timeout == 0) ? Infinity : net.trainOpts.timeout;
         }
 
-        this.brainText.fromJSON(modelObj);
+        this.brainText.fromJSON(model.modelJSON);
 
         this.modelFunction = function (entry) {
             let result = this.brainText.run(entry);
@@ -174,9 +189,12 @@ class Scratch3Easyml {
     }
 
     retrain (args) {
-        console.log(args);
         let entry = args.ENTRY;
         let label = args.LABEL;
+        
+        console.log(this.runtimeState);
+        // Perform training only when project is running
+        if( this.runtimeState != "RUNNING") return;
 
         if(this.brainText.addOneData({label: label, text: entry})){
             return this.brainText.train();
