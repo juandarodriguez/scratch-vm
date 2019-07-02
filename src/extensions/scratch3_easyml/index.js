@@ -58,7 +58,7 @@ class Scratch3Easyml {
     getInfo() {
         return {
             id: 'easyml',
-            name: 'EasyML',
+            name: 'LearningML',
             blocks: [
                 {
                     opcode: 'classify',
