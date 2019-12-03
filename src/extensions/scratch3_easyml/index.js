@@ -15,7 +15,7 @@ class Scratch3Easyml {
     constructor(runtime) {
         this.modelFunction = null;
         this.easymodelStorage = createGuest("http://localhost:4200");
-        //this.easymodelStorage = createGuest("http://learningml.juandarodriguez.es");
+        //this.easymodelStorage = createGuest("http://editor.learningml.org");
         this.runtime = runtime;
         this.brainText = new BrainText();
         this.runtimeState = "STOPPED";
